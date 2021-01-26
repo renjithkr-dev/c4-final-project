@@ -12,6 +12,7 @@ provider:
   environment:
     TODOS_TABLE: todos
     INDEX_NAME: userIndex
+    AUTH0_SECRET: _sw1HgbIB95ZlqMD8dQK5OP-PQQRQxIwlJpNsRuMHBs5QyaMUyuCQFu5Pzj7MIAu
 
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
@@ -35,6 +36,7 @@ functions:
           path: todos
           cors:
             headers: '*'
+          authorizer: Auth
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
     iamRoleStatements:

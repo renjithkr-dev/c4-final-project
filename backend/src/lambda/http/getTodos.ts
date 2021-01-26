@@ -19,9 +19,10 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       ":id":"1"
     }
 };
-let data={}
+let data=[]
 try {
-  data=await docClient.query(params).promise()
+  const resp=await docClient.query(params).promise()
+  data=resp.Items
 } catch (error) {
   logger.error(error)
 }
@@ -31,7 +32,7 @@ return{
     "Access-Control-Allow-Origin" : "http://localhost:3000",
     'Access-Control-Allow-Credentials': true
   },
-  body:JSON.stringify(data)
+  body:JSON.stringify({"items":data})
 }
 /*   return {
     statusCode : 200,
