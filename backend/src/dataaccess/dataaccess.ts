@@ -70,6 +70,25 @@ export const UpdateItem=async (toDoID:string,newItem:any)=>{
           throw e
         }
 }
+export const UpdateURLForItem=async (toDoID:string,url:any)=>{
+    const params = {
+        TableName:process.env.TODOS_TABLE,
+        Key:{
+            "todoId":toDoID
+        },
+        UpdateExpression:'set attachmentUrl=:aurl',
+        ExpressionAttributeValues:{
+            ":aurl":url
+        },
+        ReturnValues:"ALL_NEW"
+    };
+    try{
+        const uItem=await docClient.update(params).promise();
+        return Promise.resolve(uItem)
+        }catch(e){
+          throw e
+        }
+}
 export const DeleteItem=async (toDoID:string)=>{
     const params = {
         TableName:process.env.TODOS_TABLE,

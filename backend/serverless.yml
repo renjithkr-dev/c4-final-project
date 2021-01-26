@@ -9,12 +9,13 @@ plugins:
 provider:
   name: aws
   runtime: nodejs12.x
-  environment:
-    TODOS_TABLE: todos
-    INDEX_NAME: userIndex
 
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
+  environment:
+    TODOS_TABLE: todos-${self:provider.stage}
+    INDEX_NAME: userIndex
+    BUCKET_NAME: udagram-bucket-1-${self:provider.stage}
 
 functions:
 
@@ -84,6 +85,16 @@ functions:
   # TODO: Configure this function
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action: 
+          - S3:PutObject
+          - S3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.BUCKET_NAME}/*
+      - Effect: 'Allow'
+        Action: 
+        - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
     events:
       - http:
           method: post
@@ -93,6 +104,28 @@ functions:
           authorizer: Auth
 resources:
   Resources:
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties: 
+        Bucket: !Ref UploadBucket
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - S3:GetObject
+              Resource: arn:aws:s3:::${self:provider.environment.BUCKET_NAME}/*
+              Principal: '*'
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.BUCKET_NAME}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT]
+              AllowedOrigins: ['http://localhost:3000']
+              MaxAge: '3600'
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
