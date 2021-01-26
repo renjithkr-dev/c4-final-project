@@ -68,10 +68,18 @@ functions:
   # TODO: Configure this function
   DeleteTodo:
     handler: src/lambda/http/deleteTodo.handler
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action: 
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
     events:
       - http:
           method: delete
           path: todos/{todoId}
+          cors:
+            headers: '*'
+          authorizer: Auth
 
   # TODO: Configure this function
   GenerateUploadUrl:
@@ -80,7 +88,9 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
-
+          cors:
+            headers: '*'
+          authorizer: Auth
 resources:
   Resources:
     TodosTable:

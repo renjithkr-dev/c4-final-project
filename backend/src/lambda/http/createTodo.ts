@@ -17,14 +17,14 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const newTodo: CreateTodoRequest = JSON.parse(event.body)
   try {
     const params=await AddItem(event.requestContext.authorizer.principalId,newTodo)
-    const {userId,todoId,...responseItems}=params
+    const {userId,...responseItems}=params
     return {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "http://localhost:3000",
         'Access-Control-Allow-Credentials': true
       },
-      body: JSON.stringify(responseItems)
+      body: JSON.stringify({"item":responseItems})
     }
   } catch (e) {
     logger.error(e)

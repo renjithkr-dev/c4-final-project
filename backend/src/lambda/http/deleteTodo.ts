@@ -19,7 +19,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
         "Access-Control-Allow-Origin": "http://localhost:3000",
         'Access-Control-Allow-Credentials': true
       },
-      body: "Deletion success"
+      body: JSON.stringify(data)
     }
   } catch (error) {
     logger.error(error)
