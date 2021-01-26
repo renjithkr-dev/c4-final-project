@@ -8,9 +8,13 @@ export const GetItemsForUserId=async (uId:string)=>{
         TableName: process.env.TODOS_TABLE,
         IndexName: process.env.INDEX_NAME,
         KeyConditionExpression:"userId=:id",
+        ExpressionAttributeNames:{
+            "#todoName": "name"
+        },
         ExpressionAttributeValues:{
           ":id":uId
-        }
+        },
+        "ProjectionExpression": "todoId,attachmentUrl,dueDate,createdAt,#todoName,done"
     };
     let data=[]
     try {
@@ -22,11 +26,11 @@ export const GetItemsForUserId=async (uId:string)=>{
     return Promise.resolve(data)
 }
 
-export const AddItem=async (item:any)=>{
+export const AddItem=async (userId:string,item:any)=>{
     const params = {
         TableName:process.env.TODOS_TABLE,
         Item:{
-          userId: "1",
+          userId: userId,
           todoId: `${uuid()}`,
           createdAt: new Date().toDateString(),
           ...item,

@@ -41,7 +41,7 @@ export const handler = async (
   try {
     const jwtToken = await verifyToken(event.authorizationToken)
     logger.info('User was authorized', jwtToken)
-
+    
     return {
       principalId: jwtToken.sub,
       policyDocument: {
