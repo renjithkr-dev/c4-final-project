@@ -12,7 +12,6 @@ provider:
   environment:
     TODOS_TABLE: todos
     INDEX_NAME: userIndex
-    AUTH0_SECRET: _sw1HgbIB95ZlqMD8dQK5OP-PQQRQxIwlJpNsRuMHBs5QyaMUyuCQFu5Pzj7MIAu
 
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
@@ -53,10 +52,18 @@ functions:
   # TODO: Configure this function
   UpdateTodo:
     handler: src/lambda/http/updateTodo.handler
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action: 
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
     events:
       - http:
           method: patch
           path: todos/{todoId}
+          cors:
+            headers: '*'
+          authorizer: Auth
 
   # TODO: Configure this function
   DeleteTodo:
@@ -82,15 +89,11 @@ resources:
         AttributeDefinitions:
           - AttributeName: todoId
             AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
           - AttributeName: userId
             AttributeType: S
         KeySchema:
           - AttributeName: todoId
             KeyType: HASH
-          - AttributeName: createdAt
-            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODOS_TABLE}
         GlobalSecondaryIndexes:

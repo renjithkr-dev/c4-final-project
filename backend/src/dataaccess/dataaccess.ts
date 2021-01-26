@@ -45,3 +45,46 @@ export const AddItem=async (userId:string,item:any)=>{
           throw e
         }
 }
+
+export const UpdateItem=async (toDoID:string,newItem:any)=>{
+    const params = {
+        TableName:process.env.TODOS_TABLE,
+        Key:{
+            "todoId":toDoID
+        },
+        ExpressionAttributeNames:{
+            "#todoName": "name"
+        },
+        UpdateExpression:'set #todoName=:nm, dueDate= :dueDt, done=:dn',
+        ExpressionAttributeValues:{
+            ":nm":newItem.name,
+            ":dueDt":newItem.dueDate,
+            ":dn":newItem.done
+        },
+        ReturnValues:"ALL_NEW"
+    };
+    try{
+        const uItem=await docClient.update(params).promise();
+        return Promise.resolve(uItem)
+        }catch(e){
+          throw e
+        }
+}
+export const DeleteItem=async (toDoID:string)=>{
+    const params = {
+        TableName:process.env.TODOS_TABLE,
+        Key:{
+            "todoId":toDoID
+        },
+        ConditionExpression:'todoId=:todoID',
+        ExpressionAttributeValues:{
+            ":todoID":toDoID
+        }
+    };
+    try{
+        const uItem=await docClient.delete(params).promise();
+        return Promise.resolve("Deleted")
+        }catch(e){
+          throw e
+        }
+}
