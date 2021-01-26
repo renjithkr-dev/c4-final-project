@@ -4,6 +4,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } f
 import {DynamoDB} from "aws-sdk"
 import {createLogger,transports} from 'winston'
 import { doesNotReject } from 'assert';
+import {GetItemsForUserId} from "../../dataaccess/dataaccess"
 
 var docClient = new DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 const logger = createLogger({level: 'info',transports: [
@@ -11,21 +12,7 @@ const logger = createLogger({level: 'info',transports: [
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   // TODO: Get all TODO items for a current user
-  var params = {
-    TableName: process.env.TODOS_TABLE,
-    IndexName: process.env.INDEX_NAME,
-    KeyConditionExpression:"userId=:id",
-    ExpressionAttributeValues:{
-      ":id":"1"
-    }
-};
-let data=[]
-try {
-  const resp=await docClient.query(params).promise()
-  data=resp.Items
-} catch (error) {
-  logger.error(error)
-}
+const data=await GetItemsForUserId("1")
 return{
   statusCode:200,
   headers:{
