@@ -67,6 +67,9 @@ functions:
           method: post
           path: todos
           authorizer: Auth
+          request:
+            schema:
+              application/json: ${file(src/validators/createToDo.json)}
 
   # TODO: Configure this function
   UpdateTodo:
@@ -83,6 +86,9 @@ functions:
           cors:
             headers: '*'
           authorizer: Auth
+          request:
+            schema:
+              application/json: ${file(src/validators/updateToDo.json)}
 
   # TODO: Configure this function
   DeleteTodo:
