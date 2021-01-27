@@ -1,7 +1,10 @@
-import {DynamoDB} from "aws-sdk"
+import * as AWS from "aws-sdk"
+const AWSXRay = require('aws-xray-sdk-core')
 import {v4 as uuid} from 'uuid'
 
-var docClient = new DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+const xAWS=AWSXRay.captureAWS(AWS)
+var docClient =  new xAWS.DynamoDB.DocumentClient()
+
 
 export const GetItemsForUserId=async (uId:string)=>{
     var params = {

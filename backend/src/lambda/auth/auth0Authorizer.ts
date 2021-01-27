@@ -72,6 +72,8 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const secretObj=await getSecret()
   const data=secretObj[secretField]
 
+  logger.info(data)
+
   let buff = new Buffer(data, 'base64');
   let cert = buff.toString('ascii');
 
@@ -92,7 +94,7 @@ function getToken(authHeader: string): string {
 }
 
 async function getSecret(){
-  if (cachedSecret) return cachedSecret
+  if (cachedSecret) return JSON.parse(cachedSecret)
 
   const data=await client.getSecretValue({
     SecretId: secretId

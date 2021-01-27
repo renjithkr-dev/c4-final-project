@@ -5,8 +5,11 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-offline
-
 provider:
+
+  tracing:
+    lambda: true
+    apiGateway: true
   name: aws
   runtime: nodejs12.x
 
@@ -27,6 +30,11 @@ provider:
       Action:
         - secretsmanager:GetSecretValue
       Resource: !Ref Auth0Secret
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource: "*"
 functions:
 
   Auth:
@@ -143,7 +151,7 @@ resources:
         CorsConfiguration:
           CorsRules:
             - AllowedHeaders: ['*']
-              AllowedMethods: [GET, PUT]
+              AllowedMethods: [GET, PUT, POST]
               AllowedOrigins: ['http://localhost:3000']
               MaxAge: '3600'
     TodosTable:

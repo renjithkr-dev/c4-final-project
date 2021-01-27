@@ -1,4 +1,5 @@
-import { S3 } from "aws-sdk"
+import * as AWS from "aws-sdk"
+import * as AWSXRay from "aws-xray-sdk-core"
 import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
@@ -10,8 +11,8 @@ const logger = createLogger({
   level: 'info', transports: [
     new transports.Console()]
 })
-
-const s3 = new S3({ 'signatureVersion': 'v4' })
+const xAWS=AWSXRay.captureAWS(AWS)
+const s3 = new xAWS.S3({ 'signatureVersion': 'v4' })
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
